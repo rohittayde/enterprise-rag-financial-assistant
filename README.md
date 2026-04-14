@@ -1,4 +1,4 @@
-# 📊 Enterprise Financial RAG Assistant
+# 📊 Enterprise RAG Financial Assistant
 
 An end-to-end Retrieval-Augmented Generation (RAG) application designed to act as an AI Financial Analyst. This tool ingests massive, unstructured financial documents (like SEC 10-K reports) and allows users to ask complex questions, receiving synthesized answers grounded entirely in the provided text.
 
@@ -13,6 +13,7 @@ Financial analysts spend countless hours reading 100+ page SEC filings. This pro
 * **Ultra-Fast Inference:** Powered by Groq's specialized hardware (LPUs) and the open-source Llama 3.1 model, generating complex financial summaries in milliseconds.
 
 ---
+<img width="1920" height="1020" alt="Screenshot 2026-04-14 162318" src="https://github.com/user-attachments/assets/39f68a20-8348-4aa5-aabe-2a7c5b02ccd2" />
 
 ## 🛠️ Architecture & Tech Stack
 
@@ -48,3 +49,4 @@ financial-rag-assistant/
 ├── requirements.txt         # Project dependencies
 ├── .gitignore               # Git ignore file for security
 └── README.md                # Project documentation 
+
