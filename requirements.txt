@@ -2,7 +2,7 @@ langchain
 langchain-community
 pypdf==4.2.0
 tiktoken==0.6.0
-chromadb==0.4.24
+chromadb
 sentence-transformers==2.7.0
 langchain-groq
 langchain-classic
