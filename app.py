@@ -1,22 +1,19 @@
 import streamlit as st
 import os
-import subprocess
 import streamlit as st
 
-# Check if the database folder exists
-if not os.path.exists("./chroma_db"):
+# Dynamically get the absolute path to the directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(BASE_DIR, "chroma_db")
+
+# Check if the database folder exists using the absolute path
+if not os.path.exists(db_path):
     with st.spinner("Building the vector database..."):
         try:
-            # NOTE: If your file is named ingest.py, change "create_db.py" below!
-            result = subprocess.run(
-                ["python", "create_db.py"], 
-                capture_output=True, 
-                text=True, 
-                check=True
-            )
+            import create_db 
             st.success("Database built successfully! You can now ask questions.")
-        except subprocess.CalledProcessError as e:
-            st.error(f"Failed to build database. Here is why: {e.stderr}")
+        except Exception as e:
+            st.error(f"Failed to build database. Error: {e}")
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
