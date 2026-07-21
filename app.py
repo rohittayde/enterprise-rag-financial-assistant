@@ -1,14 +1,22 @@
 import streamlit as st
 import os
-import os
 import subprocess
 import streamlit as st
 
-# Check if the database folder exists on the cloud server
-if not os.path.exists("./chroma_db"):  # Change this to whatever your DB folder is named
-    with st.spinner("Building the vector database for the first time... This will just take a moment."):
-        # Run your ingestion script automatically
-        subprocess.run(["python", "create_db.py"]) # Use ingest.py if that is your script name
+# Check if the database folder exists
+if not os.path.exists("./chroma_db"):
+    with st.spinner("Building the vector database..."):
+        try:
+            # NOTE: If your file is named ingest.py, change "create_db.py" below!
+            result = subprocess.run(
+                ["python", "create_db.py"], 
+                capture_output=True, 
+                text=True, 
+                check=True
+            )
+            st.success("Database built successfully! You can now ask questions.")
+        except subprocess.CalledProcessError as e:
+            st.error(f"Failed to build database. Here is why: {e.stderr}")
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
