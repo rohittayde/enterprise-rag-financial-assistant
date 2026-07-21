@@ -6,7 +6,7 @@ from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
 
 # Set your Groq API Key
-os.environ["GROQ_API_KEY"] = "YOUR_ACTUAL_GROQ_KEY_HERE"
+os.environ["GROQ_API_KEY"] = "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"
 
 # 1. UI Setup
 st.set_page_config(page_title="Financial Analyst", page_icon="📊")
