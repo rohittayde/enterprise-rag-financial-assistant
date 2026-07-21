@@ -1,26 +1,11 @@
 import streamlit as st
 import os
-import streamlit as st
-
-# Dynamically get the absolute path to the directory
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-db_path = os.path.join(BASE_DIR, "chroma_db")
-
-# Check if the database folder exists using the absolute path
-if not os.path.exists(db_path):
-    with st.spinner("Building the vector database..."):
-        try:
-            import create_db 
-            st.success("Database built successfully! You can now ask questions.")
-        except Exception as e:
-            st.error(f"Failed to build database. Error: {e}")
-from langchain_community.vectorstores import Chroma
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from langchain_groq import ChatGroq
 from langchain_classic.chains import RetrievalQA
-
-# Set your Groq API Key
-os.environ["GROQ_API_KEY"] = "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"
 
 # 1. UI Setup
 st.set_page_config(page_title="Financial Analyst", page_icon="📊")
@@ -28,16 +13,32 @@ st.title("📊 Enterprise RAG - Financial Assistant")
 st.markdown("Ask the AI Analyst any question about the SEC 10-K report.")
 st.divider()
 
-# 2. Cache the Engine
+# 2. Cache the Engine (Zero-Database, In-Memory Build)
 @st.cache_resource
 def load_rag_chain():
-    embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
-    vector_db = Chroma(
-        persist_directory="./chroma_db", 
-        embedding_function=embedding_model
-    )
-    llm = ChatGroq(model_name="llama-3.1-8b-instant", temperature=0)
+    # A. Find the PDF dynamically using absolute paths
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    pdf_path = os.path.join(BASE_DIR, "financial_report.pdf")
     
+    # B. Load and chunk the PDF directly on boot
+    loader = PyPDFLoader(pdf_path)
+    documents = loader.load()
+    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    chunks = text_splitter.split_documents(documents)
+    
+    # C. Create embeddings and build IN-MEMORY database (No persist_directory!)
+    embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    vector_db = Chroma.from_documents(documents=chunks, embedding=embedding_model)
+    
+    # D. Initialize LLM (Pulls API key securely from Streamlit Secrets)
+    llm = ChatGroq(
+        model_name="llama-3.1-8b-instant", 
+        temperature=0,
+        api_key=st.secrets["GROQ_API_KEY"]
+    )
+    
+    # E. Wire up the chain
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
@@ -45,7 +46,9 @@ def load_rag_chain():
     )
     return qa_chain
 
-qa_chain = load_rag_chain()
+# Show a loading spinner while the database builds in the background
+with st.spinner("Initializing AI and reading financial documents..."):
+    qa_chain = load_rag_chain()
 
 # 3. Initialize Chat Memory (Session State)
 if "messages" not in st.session_state:
