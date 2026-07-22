@@ -11,7 +11,7 @@ from langchain_classic.chains import RetrievalQA
 # 1. UI Setup
 st.set_page_config(page_title="Financial Analyst", page_icon="📊", layout="wide")
 st.title("📊 Enterprise RAG - Financial Assistant")
-st.markdown("Ask the AI Analyst any question about the SEC 10-K report.")
+st.markdown("Ask the AI Analyst any question about the Apple inc SEC 10-K report.")
 st.divider()
 
 # 2. PDF Viewer in Sidebar
@@ -24,7 +24,7 @@ def display_pdf(file_path):
 
 with st.sidebar:
     st.header("📄 Source Document")
-    st.markdown("View or download the financial report.")
+    st.markdown("View or download the Apple inc sec 10 k financial report.")
     
     # Locate the PDF dynamically
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
